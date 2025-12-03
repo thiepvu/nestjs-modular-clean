@@ -1,5 +1,10 @@
 # Migration Commands Quick Reference
 
+## Create schema
+```bash
+# 1. Create all schemas
+npm run schema:create
+```
 ## Generate Migrations
 
 ```bash
@@ -45,6 +50,15 @@ npm run migration:status -- --module=users
 npm run migration:status -- --all
 ```
 
+# Run seeders
+```bash
+# Single module
+npm run seed:run -- --module=users
+
+# All modules
+npm run seed:run -- --all
+```
+
 ## Common Workflows
 
 ### Initial Setup
@@ -62,6 +76,9 @@ npm run migration:run -- --all
 
 # 4. Verify
 npm run migration:status -- --all
+
+# 5. Run Seeds
+npm run seed:run -- --all
 ```
 
 ### Add New Feature to Module

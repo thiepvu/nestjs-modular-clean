@@ -24,7 +24,7 @@
     "migration:run": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/run-migration.ts",
     "migration:revert": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/run-migration.ts",
     "migration:status": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/migration-status.ts",
-    "seed:run": "ts-node -r tsconfig-paths/register src/infrastructure/database/seeds/run-seeds.ts"
+    "seed:run": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/run-seeders.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
