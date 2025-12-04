@@ -4,8 +4,8 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Migration for users module
  * Schema: users_schema
  */
-export class InitialSchemaUsers1764794088480 implements MigrationInterface {
-  name = 'InitialSchemaUsers1764794088480';
+export class InitialSchemaUsers1764815562871 implements MigrationInterface {
+  name = 'InitialSchemaUsers1764815562871';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create schema if not exists

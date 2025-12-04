@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
     "schema:create": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/create-schemas.ts",
+    "seed:setup": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/setup-seeders.ts",
     "migration:generate": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/generate-migration.ts",
     "migration:run": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/run-migration.ts",
     "migration:revert": "ts-node -r tsconfig-paths/register src/infrastructure/database/cli/run-migration.ts",

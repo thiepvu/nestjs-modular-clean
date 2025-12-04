@@ -2,13 +2,24 @@ import { DataSource } from 'typeorm';
 import { ModuleSeederInfo } from './module-seeder-scanner';
 import { DataSourceFactory } from './data-source-factory';
 import { ISeeder } from '../seeders/base.seeder';
-import { ModuleEntityScanner } from './module-entity-scanner';
+import { User } from '@modules/users/domain/entities/user.entity';
+import { Product } from '@modules/products/domain/entities/product.entity';
+import { Order } from '@modules/orders/domain/entities/order.entity';
 
 /**
  * Seeder Runner
  * Runs seeders for modules
+ * 
+ * Note: Uses explicit entity imports to ensure metadata is loaded
  */
 export class SeederRunner {
+  /**
+   * Get all entities (explicit imports)
+   */
+  private getAllEntities(): any[] {
+    return [User, Product, Order];
+  }
+
   /**
    * Run seeders for a specific module
    */
@@ -18,16 +29,12 @@ export class SeederRunner {
       return;
     }
 
-    // Get entities for this module (needed for DataSource)
-    const entityScanner = new ModuleEntityScanner();
-    const moduleInfo = await entityScanner.scanModule(moduleSeederInfo.name);
+    // Use explicit entity imports to ensure metadata is loaded
+    const allEntities = this.getAllEntities();
+    console.log(`  Loaded ${allEntities.length} entities for DataSource`);
 
-    if (!moduleInfo) {
-      throw new Error(`Could not load entities for module: ${moduleSeederInfo.name}`);
-    }
-
-    // Create DataSource for this module
-    const dataSource = DataSourceFactory.createModuleDataSource(moduleInfo, {
+    // Create DataSource with all entities
+    const dataSource = DataSourceFactory.createApplicationDataSource(allEntities, {
       logging: false,
     });
 

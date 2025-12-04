@@ -4,8 +4,8 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * Migration for orders module
  * Schema: orders_schema
  */
-export class InitialSchemaOrders1764794088414 implements MigrationInterface {
-  name = 'InitialSchemaOrders1764794088414';
+export class InitialSchemaOrders1764815562715 implements MigrationInterface {
+  name = 'InitialSchemaOrders1764815562715';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create schema if not exists
