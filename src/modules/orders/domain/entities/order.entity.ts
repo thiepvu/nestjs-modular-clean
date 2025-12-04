@@ -24,6 +24,7 @@ export class Order extends BaseEntity {
   quantity: number;
   totalPrice: number;
   status: OrderStatus;
+  minPrice?: number;
 
   constructor(
     userId: string,
@@ -31,6 +32,7 @@ export class Order extends BaseEntity {
     quantity: number,
     totalPrice: number,
     status: OrderStatus = OrderStatus.PENDING,
+    minPrice: number,
     id?: string,
     createdAt?: Date,
     updatedAt?: Date,
@@ -41,6 +43,7 @@ export class Order extends BaseEntity {
     this.quantity = quantity;
     this.totalPrice = totalPrice;
     this.status = status;
+    this.minPrice = minPrice;
   }
 
   /**

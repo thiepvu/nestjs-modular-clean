@@ -18,11 +18,9 @@ config();
  */
 async function main() {
   const args = process.argv.slice(2);
-  const scriptName = process.argv[1];
-  
+  const mode = process.env.MIGRATION_MODE;
   // Determine if this is revert operation
-  const isRevert = scriptName.includes('revert');
-  
+  const isRevert = mode === 'revert';
   // Parse arguments
   const options = {
     module: '',

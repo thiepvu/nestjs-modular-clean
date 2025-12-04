@@ -39,6 +39,13 @@ export const OrderSchema = new EntitySchema<Order>({
       enum: OrderStatus,
       default: OrderStatus.PENDING,
     },
+    minPrice: {
+      type: 'decimal',
+      precision: 10,
+      scale: 2,
+      name: 'min_price',
+      default: 0,
+    },
     createdAt: {
       type: 'timestamp',
       name: 'created_at',
