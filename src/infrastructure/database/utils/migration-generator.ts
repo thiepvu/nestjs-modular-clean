@@ -1,13 +1,14 @@
 import { DataSource } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ModuleInfo } from './module-entity-scanner';
+import { ModuleSchemaInfo } from './module-schema-scanner';
 import { DatabaseConfig } from '../config/database.config';
 import { DataSourceFactory } from './data-source-factory';
 
 /**
  * Migration Generator for Modules
  * Generates migrations per module in separate folders
+ * Now uses EntitySchema instead of decorator-based entities
  */
 export class MigrationGenerator {
   private readonly migrationsBasePath: string;
@@ -20,7 +21,7 @@ export class MigrationGenerator {
    * Generate migration for a specific module
    */
   async generateMigration(
-    moduleInfo: ModuleInfo,
+    moduleInfo: ModuleSchemaInfo,
     migrationName: string,
   ): Promise<string | null> {
     const timestamp = Date.now();
@@ -31,8 +32,8 @@ export class MigrationGenerator {
       fs.mkdirSync(moduleMigrationsPath, { recursive: true });
     }
 
-    // Create DataSource for this module using factory
-    const dataSource = DataSourceFactory.createModuleDataSource(moduleInfo);
+    // Create DataSource for this module using factory with schemas
+    const dataSource = DataSourceFactory.createModuleDataSourceFromSchemas(moduleInfo);
 
     try {
       await dataSource.initialize();
@@ -74,7 +75,7 @@ export class MigrationGenerator {
    * Generate migrations for all modules
    */
   async generateAllMigrations(
-    modules: ModuleInfo[],
+    modules: ModuleSchemaInfo[],
     baseMigrationName: string = 'auto-generated',
   ): Promise<Map<string, string>> {
     const results = new Map<string, string>();
@@ -98,7 +99,7 @@ export class MigrationGenerator {
    * Generate migration file content
    */
   private generateMigrationContent(
-    moduleInfo: ModuleInfo,
+    moduleInfo: ModuleSchemaInfo,
     migrationName: string,
     timestamp: number,
     upQueries: any[],

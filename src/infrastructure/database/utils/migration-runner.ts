@@ -1,13 +1,14 @@
 import { DataSource } from 'typeorm';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ModuleInfo } from './module-entity-scanner';
+import { ModuleSchemaInfo } from './module-schema-scanner';
 import { DatabaseConfig } from '../config/database.config';
 import { DataSourceFactory } from './data-source-factory';
 
 /**
  * Migration Runner for Modules
  * Runs migrations per module or all modules
+ * Now uses EntitySchema instead of decorator-based entities
  */
 export class MigrationRunner {
   private readonly migrationsBasePath: string;
@@ -20,7 +21,7 @@ export class MigrationRunner {
    * Run migrations for a specific module
    */
   async runModuleMigrations(
-    moduleInfo: ModuleInfo,
+    moduleInfo: ModuleSchemaInfo,
     options: { revert?: boolean } = {},
   ): Promise<void> {
     const moduleMigrationsPath = DatabaseConfig.getModuleMigrationsPath(moduleInfo.name);
@@ -40,8 +41,8 @@ export class MigrationRunner {
       return;
     }
 
-    // Create DataSource with migrations using factory
-    const dataSource = DataSourceFactory.createModuleDataSourceWithMigrations(
+    // Create DataSource with migrations using factory with schemas
+    const dataSource = DataSourceFactory.createModuleDataSourceWithMigrationsFromSchemas(
       moduleInfo,
       migrationFiles,
       { logging: true }
@@ -49,6 +50,10 @@ export class MigrationRunner {
 
     try {
       await dataSource.initialize();
+
+      // IMPORTANT: Create schema first if it doesn't exist
+      console.log(`📋 Ensuring schema exists: ${moduleInfo.schema}`);
+      await dataSource.query(`CREATE SCHEMA IF NOT EXISTS "${moduleInfo.schema}"`);
 
       if (options.revert) {
         console.log(`\n🔄 Reverting last migration for module: ${moduleInfo.name}`);
@@ -79,7 +84,7 @@ export class MigrationRunner {
    * Run migrations for all modules
    */
   async runAllMigrations(
-    modules: ModuleInfo[],
+    modules: ModuleSchemaInfo[],
     options: { revert?: boolean } = {},
   ): Promise<void> {
     console.log(`\n${'='.repeat(60)}`);
@@ -103,7 +108,7 @@ export class MigrationRunner {
   /**
    * Show migration status for a module
    */
-  async showModuleMigrationStatus(moduleInfo: ModuleInfo): Promise<void> {
+  async showModuleMigrationStatus(moduleInfo: ModuleSchemaInfo): Promise<void> {
     const moduleMigrationsPath = DatabaseConfig.getModuleMigrationsPath(moduleInfo.name);
 
     if (!fs.existsSync(moduleMigrationsPath)) {
@@ -115,7 +120,7 @@ export class MigrationRunner {
       .filter(file => file.endsWith(DatabaseConfig.MIGRATION_FILE_EXTENSION) || file.endsWith('.js'))
       .map(file => path.join(moduleMigrationsPath, file));
 
-    const dataSource = DataSourceFactory.createModuleDataSourceWithMigrations(
+    const dataSource = DataSourceFactory.createModuleDataSourceWithMigrationsFromSchemas(
       moduleInfo,
       migrationFiles,
       { logging: false }
@@ -158,7 +163,7 @@ export class MigrationRunner {
   /**
    * Show migration status for all modules
    */
-  async showAllMigrationStatus(modules: ModuleInfo[]): Promise<void> {
+  async showAllMigrationStatus(modules: ModuleSchemaInfo[]): Promise<void> {
     console.log(`\n${'='.repeat(60)}`);
     console.log('Migration Status Report');
     console.log('='.repeat(60));
