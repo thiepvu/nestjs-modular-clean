@@ -25,15 +25,32 @@ export class UserRepository implements IUserRepository {
     return this.repository.findOne({ where: criteria as any });
   }
 
-  async findAll(criteria?: Partial<User>): Promise<User[]> {
+  async findAll(criteria?: Partial<User>, options?: any): Promise<User[]> {
+    const findOptions: any = {};
+    
     if (criteria) {
-      return this.repository.find({ where: criteria as any });
+      findOptions.where = criteria;
     }
-    return this.repository.find();
+    
+    if (options) {
+      if (options.skip !== undefined) findOptions.skip = options.skip;
+      if (options.take !== undefined) findOptions.take = options.take;
+      if (options.order) findOptions.order = options.order;
+    }
+    
+    return this.repository.find(findOptions);
   }
 
   async create(data: Partial<User>): Promise<User> {
-    const user = this.repository.create(data as any);
+    // Filter out undefined values to prevent empty strings
+    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+    
+    const user = this.repository.create(cleanData);
     const saved = await this.repository.save(user);
     return Array.isArray(saved) ? saved[0] : saved;
   }

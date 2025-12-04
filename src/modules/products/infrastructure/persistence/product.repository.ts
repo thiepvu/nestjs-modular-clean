@@ -42,7 +42,15 @@ export class ProductRepository implements IProductRepository {
   }
 
   async create(data: Partial<Product>): Promise<Product> {
-    const product = this.repository.create(data as any);
+    // Filter out undefined values to prevent empty strings
+    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+    
+    const product = this.repository.create(cleanData);
     const saved = await this.repository.save(product);
     return Array.isArray(saved) ? saved[0] : saved;
   }

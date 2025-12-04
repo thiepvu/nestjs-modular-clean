@@ -42,7 +42,15 @@ export class OrderRepository implements IOrderRepository {
   }
 
   async create(data: Partial<Order>): Promise<Order> {
-    const order = this.repository.create(data as any);
+    // Filter out undefined values to prevent empty strings
+    const cleanData = Object.entries(data).reduce((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+    
+    const order = this.repository.create(cleanData);
     const saved = await this.repository.save(order);
     return Array.isArray(saved) ? saved[0] : saved;
   }

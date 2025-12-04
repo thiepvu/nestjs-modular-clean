@@ -48,7 +48,7 @@ export class CreateOrderUseCase extends BaseUseCase<CreateOrderInput, Order> {
     // Use Unit of Work to manage transaction across multiple operations
     return this.unitOfWork.withTransaction(async () => {
       // Update product stock
-      await this.productRepository.update(product.id, {
+      await this.productRepository.update(input.productId, {
         stock: product.stock - input.quantity,
       });
 

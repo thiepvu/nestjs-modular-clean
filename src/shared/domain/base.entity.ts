@@ -4,12 +4,15 @@
  * All domain entities should extend this class
  */
 export abstract class BaseEntity {
-  id: string;
+  id?: string;
   createdAt: Date;
   updatedAt: Date;
 
   constructor(id?: string, createdAt?: Date, updatedAt?: Date) {
-    this.id = id || '';
+    // Don't set id if undefined - let TypeORM generate it
+    if (id) {
+      this.id = id;
+    }
     this.createdAt = createdAt || new Date();
     this.updatedAt = updatedAt || new Date();
   }
