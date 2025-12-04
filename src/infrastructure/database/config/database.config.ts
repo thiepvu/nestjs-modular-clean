@@ -21,12 +21,12 @@ export const DatabaseConfig = {
   MIGRATIONS_BASE_PATH: path.join(process.cwd(), 'src', 'infrastructure', 'database', 'migrations'),
   
   /**
-   * Entity Discovery
+   * Schema Discovery (for EntitySchema pattern)
+   * Used by migrations to scan for *.schema.ts files
    */
-  ENTITIES_FOLDER_NAME: 'entities',
-  ENTITIES_PATH_IN_MODULE: path.join('domain', 'entities'),
-  ENTITY_FILE_SUFFIX: '.entity.ts',
-  ENTITY_FILE_SUFFIX_JS: '.entity.js',
+  SCHEMAS_FOLDER_PATH: path.join('infrastructure', 'persistence'),
+  SCHEMA_FILE_SUFFIX: '.schema.ts',
+  SCHEMA_FILE_SUFFIX_JS: '.schema.js',
   
   /**
    * Database Connection
@@ -79,10 +79,10 @@ export const DatabaseConfig = {
   },
   
   /**
-   * Get entities path for a module
+   * Get schemas path for a module (for EntitySchema pattern)
    */
-  getModuleEntitiesPath(moduleName: string): string {
-    return path.join(this.MODULES_PATH, moduleName, this.ENTITIES_PATH_IN_MODULE);
+  getModuleSchemasPath(moduleName: string): string {
+    return path.join(this.MODULES_PATH, moduleName, this.SCHEMAS_FOLDER_PATH);
   },
   
   /**

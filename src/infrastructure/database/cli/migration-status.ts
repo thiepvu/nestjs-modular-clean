@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 import { config } from 'dotenv';
-import { ModuleEntityScanner } from '../utils/module-entity-scanner';
+import { ModuleSchemaScanner } from '../utils/module-schema-scanner';
 import { MigrationRunner } from '../utils/migration-runner';
 
 // Load environment variables
@@ -8,6 +8,8 @@ config();
 
 /**
  * CLI for checking migration status
+ * Now uses ModuleSchemaScanner to scan EntitySchema files
+ * 
  * Usage:
  *   npm run migration:status -- --module=users
  *   npm run migration:status -- --all
@@ -41,7 +43,7 @@ async function main() {
   }
 
   try {
-    const scanner = new ModuleEntityScanner();
+    const scanner = new ModuleSchemaScanner();
     const runner = new MigrationRunner();
 
     if (options.all) {
@@ -49,7 +51,7 @@ async function main() {
       const modules = await scanner.scanAllModules();
       
       if (modules.length === 0) {
-        console.log('No modules with entities found.');
+        console.log('No modules with schemas found.');
         process.exit(0);
       }
 
@@ -59,7 +61,8 @@ async function main() {
       const moduleInfo = await scanner.scanModule(options.module);
 
       if (!moduleInfo) {
-        console.error(`❌ Module not found: ${options.module}`);
+        console.error(`❌ Module not found or has no schemas: ${options.module}`);
+        console.error(`    Expected schemas at: modules/${options.module}/infrastructure/persistence/*.schema.ts`);
         process.exit(1);
       }
 

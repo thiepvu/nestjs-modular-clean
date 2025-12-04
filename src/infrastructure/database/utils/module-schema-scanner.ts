@@ -19,9 +19,6 @@ export interface ModuleSchemaInfo {
  */
 export class ModuleSchemaScanner {
   private readonly modulesPath: string;
-  private readonly schemasFolderPath = 'infrastructure/persistence';
-  private readonly schemaFileSuffix = '.schema.ts';
-  private readonly schemaFileSuffixJs = '.schema.js';
 
   constructor(modulesPath?: string) {
     this.modulesPath = modulesPath || DatabaseConfig.MODULES_PATH;
@@ -63,7 +60,7 @@ export class ModuleSchemaScanner {
    */
   scanModuleSync(moduleName: string): ModuleSchemaInfo | null {
     const modulePath = DatabaseConfig.getModulePath(moduleName);
-    const schemasPath = path.join(modulePath, this.schemasFolderPath);
+    const schemasPath = path.join(modulePath, DatabaseConfig.SCHEMAS_FOLDER_PATH);
 
     console.log(`  Module path: ${modulePath}`);
     console.log(`  Schemas path: ${schemasPath}`);
@@ -109,8 +106,8 @@ export class ModuleSchemaScanner {
     const schemas: any[] = [];
     const files = fs.readdirSync(schemasPath)
       .filter(file => 
-        file.endsWith(this.schemaFileSuffix) || 
-        file.endsWith(this.schemaFileSuffixJs)
+        file.endsWith(DatabaseConfig.SCHEMA_FILE_SUFFIX) || 
+        file.endsWith(DatabaseConfig.SCHEMA_FILE_SUFFIX_JS)
       );
 
     console.log(`  Scanning ${files.length} schema file(s) in ${schemasPath}`);

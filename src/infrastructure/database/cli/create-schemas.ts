@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 import { config } from 'dotenv';
 import { DataSource } from 'typeorm';
-import { ModuleEntityScanner } from '../utils/module-entity-scanner';
+import { ModuleSchemaScanner } from '../utils/module-schema-scanner';
 import { DatabaseConfig } from '../config/database.config';
 
 // Load environment variables
@@ -14,7 +14,7 @@ config();
 async function main() {
   console.log('🏗️  Creating schemas for all modules...\n');
 
-  const scanner = new ModuleEntityScanner();
+  const scanner = new ModuleSchemaScanner();
   const modules = await scanner.scanAllModules();
 
   if (modules.length === 0) {

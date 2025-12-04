@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 import { config } from 'dotenv';
-import { ModuleEntityScanner } from '../utils/module-entity-scanner';
+import { ModuleSchemaScanner } from '../utils/module-schema-scanner';
 import { MigrationGenerator } from '../utils/migration-generator';
 
 // Load environment variables
@@ -8,6 +8,8 @@ config();
 
 /**
  * CLI for generating migrations
+ * Now uses ModuleSchemaScanner to scan EntitySchema files
+ * 
  * Usage:
  *   npm run migration:generate -- --name=CreateUserTable --module=users
  *   npm run migration:generate -- --name=InitialSchema --all
@@ -49,21 +51,21 @@ async function main() {
   }
 
   try {
-    const scanner = new ModuleEntityScanner();
+    const scanner = new ModuleSchemaScanner();
     const generator = new MigrationGenerator();
 
     if (options.all) {
       // Generate migrations for all modules
-      console.log('🔍 Scanning all modules...\n');
+      console.log('🔍 Scanning all modules for EntitySchemas...\n');
       const modules = await scanner.scanAllModules();
       
       if (modules.length === 0) {
-        console.log('No modules with entities found.');
+        console.log('No modules with schemas found.');
         process.exit(0);
       }
 
       console.log(`Found ${modules.length} module(s):`);
-      modules.forEach(m => console.log(`  - ${m.name} (${m.entities.length} entities)`));
+      modules.forEach(m => console.log(`  - ${m.name} (${m.schemas.length} schema(s))`));
       console.log('');
 
       console.log('📝 Generating migrations...\n');
@@ -83,12 +85,13 @@ async function main() {
       const moduleInfo = await scanner.scanModule(options.module);
 
       if (!moduleInfo) {
-        console.error(`❌ Module not found or has no entities: ${options.module}`);
+        console.error(`❌ Module not found or has no schemas: ${options.module}`);
+        console.error(`    Expected schemas at: modules/${options.module}/infrastructure/persistence/*.schema.ts`);
         process.exit(1);
       }
 
-      console.log(`Found ${moduleInfo.entities.length} entity/entities in ${moduleInfo.name}`);
-      console.log(`Schema: ${moduleInfo.schema}\n`);
+      console.log(`Found ${moduleInfo.schemas.length} schema(s) in ${moduleInfo.name}`);
+      console.log(`Database schema: ${moduleInfo.schema}\n`);
 
       console.log('📝 Generating migration...\n');
       const filePath = await generator.generateMigration(moduleInfo, options.name);
