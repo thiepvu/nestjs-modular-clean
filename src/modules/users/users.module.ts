@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './domain/entities/user.entity';
+import { UserSchema } from './infrastructure/persistence/user.schema';
 import { UserRepository } from './infrastructure/persistence/user.repository';
 import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { GetUserByIdUseCase } from './application/use-cases/get-user-by-id.use-case';
@@ -20,9 +20,10 @@ const useCases = [
 /**
  * Users Module
  * Encapsulates all user-related functionality
+ * Uses TypeORM Schema (EntitySchema) instead of decorators on domain entity
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([UserSchema])],
   controllers: [UsersController],
   providers: [
     {

@@ -3,20 +3,18 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { UnitOfWork } from '@shared/infrastructure/unit-of-work.impl';
-import { User } from '@modules/users/domain/entities/user.entity';
-import { Product } from '@modules/products/domain/entities/product.entity';
-import { Order } from '@modules/orders/domain/entities/order.entity';
+import { EntitySchemas } from './entity-schemas.registry';
 
 /**
- * Database Module with Entity Management
+ * Database Module with Clean Architecture
  * 
- * Uses explicit imports for reliability in production.
- * Auto-scanning is available via CLI tools for migrations.
+ * Uses EntitySchemas instead of decorator-based entities
+ * This keeps the domain layer pure and free from infrastructure concerns
  * 
  * To add a new entity:
- * 1. Create entity in your module's domain/entities folder
- * 2. Import it here: import { MyEntity } from '@modules/mymodule/domain/entities/my.entity'
- * 3. Add to entities array below
+ * 1. Create pure domain entity in modules/{module}/domain/entities/
+ * 2. Create EntitySchema in modules/{module}/infrastructure/persistence/
+ * 3. Add schema to entity-schemas.registry.ts
  * 
  * Migration Structure:
  * - Each module has its own migration folder: /migrations/{moduleName}/
@@ -45,10 +43,7 @@ import { Order } from '@modules/orders/domain/entities/order.entity';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        // Use explicit entity imports for reliability
-        const entities = [User, Product, Order];
-
-        console.log(`📦 Loaded ${entities.length} entities`);
+        console.log(`📦 Loaded ${EntitySchemas.length} entity schemas`);
 
         return {
           type: 'postgres',
@@ -57,7 +52,7 @@ import { Order } from '@modules/orders/domain/entities/order.entity';
           username: configService.get('DB_USERNAME'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          entities,
+          entities: EntitySchemas,
           synchronize: false, // Always false - use migrations
           logging: configService.get('NODE_ENV') === 'development',
         };

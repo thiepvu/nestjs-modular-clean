@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Product } from './domain/entities/product.entity';
+import { ProductSchema } from './infrastructure/persistence/product.schema';
 import { ProductRepository } from './infrastructure/persistence/product.repository';
 import { CreateProductUseCase } from './application/use-cases/create-product.use-case';
 import { ProductsController } from './presentation/controllers/products.controller';
@@ -8,9 +8,10 @@ import { ProductsController } from './presentation/controllers/products.controll
 /**
  * Products Module
  * Encapsulates all product-related functionality
+ * Uses TypeORM Schema (EntitySchema) instead of decorators on domain entity
  */
 @Module({
-  imports: [TypeOrmModule.forFeature([Product])],
+  imports: [TypeOrmModule.forFeature([ProductSchema])],
   controllers: [ProductsController],
   providers: [
     {

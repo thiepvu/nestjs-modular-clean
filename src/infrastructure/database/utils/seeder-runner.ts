@@ -2,24 +2,15 @@ import { DataSource } from 'typeorm';
 import { ModuleSeederInfo } from './module-seeder-scanner';
 import { DataSourceFactory } from './data-source-factory';
 import { ISeeder } from '../seeders/base.seeder';
-import { User } from '@modules/users/domain/entities/user.entity';
-import { Product } from '@modules/products/domain/entities/product.entity';
-import { Order } from '@modules/orders/domain/entities/order.entity';
+import { EntitySchemas } from '../entity-schemas.registry';
 
 /**
  * Seeder Runner
  * Runs seeders for modules
  * 
- * Note: Uses explicit entity imports to ensure metadata is loaded
+ * Uses EntitySchemas registry for clean architecture
  */
 export class SeederRunner {
-  /**
-   * Get all entities (explicit imports)
-   */
-  private getAllEntities(): any[] {
-    return [User, Product, Order];
-  }
-
   /**
    * Run seeders for a specific module
    */
@@ -29,12 +20,11 @@ export class SeederRunner {
       return;
     }
 
-    // Use explicit entity imports to ensure metadata is loaded
-    const allEntities = this.getAllEntities();
-    console.log(`  Loaded ${allEntities.length} entities for DataSource`);
+    // Use EntitySchemas registry
+    console.log(`  Loaded ${EntitySchemas.length} entity schemas for DataSource`);
 
-    // Create DataSource with all entities
-    const dataSource = DataSourceFactory.createApplicationDataSource(allEntities, {
+    // Create DataSource with all entity schemas
+    const dataSource = DataSourceFactory.createApplicationDataSource(EntitySchemas, {
       logging: false,
     });
 

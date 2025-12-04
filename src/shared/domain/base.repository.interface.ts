@@ -1,10 +1,18 @@
-import { DeepPartial, FindManyOptions, FindOneOptions, FindOptionsWhere, ObjectLiteral } from 'typeorm';
+/**
+ * Pagination Options
+ */
+export interface PaginationOptions {
+  skip?: number;
+  take?: number;
+  order?: Record<string, 'ASC' | 'DESC'>;
+}
 
 /**
- * Base Repository Interface
+ * Base Repository Interface - Pure Domain
+ * No framework dependencies
  * All repositories should implement this interface
  */
-export interface IBaseRepository<T extends ObjectLiteral> {
+export interface IBaseRepository<T> {
   /**
    * Find entity by ID
    */
@@ -13,27 +21,22 @@ export interface IBaseRepository<T extends ObjectLiteral> {
   /**
    * Find one entity by criteria
    */
-  findOne(options: FindOneOptions<T>): Promise<T | null>;
+  findOne(criteria: Partial<T>): Promise<T | null>;
 
   /**
-   * Find all entities
+   * Find all entities with optional filtering and pagination
    */
-  findAll(options?: FindManyOptions<T>): Promise<T[]>;
-
-  /**
-   * Find entities by criteria
-   */
-  findBy(where: FindOptionsWhere<T>): Promise<T[]>;
+  findAll(criteria?: Partial<T>, options?: PaginationOptions): Promise<T[]>;
 
   /**
    * Create new entity
    */
-  create(data: DeepPartial<T>): Promise<T>;
+  create(data: Partial<T>): Promise<T>;
 
   /**
    * Update entity
    */
-  update(id: string, data: DeepPartial<T>): Promise<T>;
+  update(id: string, data: Partial<T>): Promise<T>;
 
   /**
    * Delete entity
@@ -43,10 +46,10 @@ export interface IBaseRepository<T extends ObjectLiteral> {
   /**
    * Count entities
    */
-  count(options?: FindManyOptions<T>): Promise<number>;
+  count(criteria?: Partial<T>): Promise<number>;
 
   /**
    * Check if entity exists
    */
-  exists(where: FindOptionsWhere<T>): Promise<boolean>;
+  exists(criteria: Partial<T>): Promise<boolean>;
 }

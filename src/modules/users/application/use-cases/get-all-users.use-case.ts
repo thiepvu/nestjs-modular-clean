@@ -19,7 +19,7 @@ export class GetAllUsersUseCase extends BaseUseCase<PaginationQueryDto, Paginate
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
-      this.userRepository.findAll({
+      this.userRepository.findAll(undefined, {
         skip,
         take: limit,
         order: { createdAt: 'DESC' },
